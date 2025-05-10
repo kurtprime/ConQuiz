@@ -1,41 +1,43 @@
 'use client'
 
 import { useFormStatus } from 'react-dom';
-import { deepseek } from '@/action/deepseek.action'
+import { deepseek } from '@/utils/action/deepseek.action'
 import Form from 'next/form'
 import { z } from 'zod';
 import Image from 'next/image';
-
 import pdfToText from "react-pdftotext";
-
+import { createQuiz } from '@/utils/action/quiz.action';
+import { useRouter } from 'next/navigation';
 
 
 export default function FileDrop() {
     const {pending} = useFormStatus();
-
+    const router = useRouter()
     let PdfText: string;
 
     async function onSubmit(formData: FormData) {
         const difficulty = formData.get('difficulty') as string
         const maxQuest = formData?.get('numberOfQuestions') as string;
+        console.log(PdfText)
 
-
-        //const quiz: any = await deepseek({content: PdfText,difficulty: difficulty , maxQuestion: +maxQuest})
-        await new Promise(resolve => setTimeout(resolve, 10000))
-        console.log("DELEY")
+        const res: any = await deepseek({content: PdfText,difficulty: difficulty , maxQuestion: +maxQuest})
+        //await new Promise(resolve => setTimeout(resolve, 10000))
+        const quiz = JSON.parse(res)
+        console.log("QUIZ", quiz)   
+        const id = await createQuiz(quiz)
+        router.push(`/quiz/${id}`)
      } 
      function extractText(event: any) {
         const file = event.target.files[0];
         pdfToText(file)
-          .then((text) => PdfText=text )
+          .then((text) =>  PdfText=text )
           .catch((error) => console.error("Failed to extract text from pdf"));
       }
 
       function Submit() {
         const {pending} = useFormStatus();
-        return  <button type='submit' disabled={pending} aria-disabled={pending} className="btn btn-primary"
-                >Convert to Quiz
-            </button>
+        if(!pending) return <button type='submit' disabled={pending} className="btn btn-primary">Convert to Quiz</button>
+        return  <span className="loading loading-infinity loading-xl">Creating Quiz</span>
 
       }
   return (

@@ -51,5 +51,5 @@ export async function deepseek({
     top_logprobs: null,
   });
 
-  return completion.choices[0].message;
+  return completion.choices[0].message.content;
 }
