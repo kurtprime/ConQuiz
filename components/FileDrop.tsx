@@ -11,7 +11,6 @@ import { useRouter } from 'next/navigation';
 
 
 export default function FileDrop() {
-    const {pending} = useFormStatus();
     const router = useRouter()
     let PdfText: string;
 

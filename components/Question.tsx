@@ -1,42 +1,53 @@
-'use client'
-
-import { useState } from 'react';
-import { QuizInter } from '@/utils/interface/quiz.inter';
+// components/Question.tsx
+'use client';
 
 interface Questions {
-    quest: {
-        question: string;
-        multipleChoices: [string];
-        correctAnswer: number
-    }
-    i: number;
+  quest: {
+    _id: string;
+    question: string;
+    multipleChoices: string[];
+    correctAnswer: number;
+  };
+  selectedAnswer: number | undefined;
+  onAnswerSelect: (selectedIndex: number) => void;
 }
 
-function Question({quest, i}:Questions) {
-    const [userAnswer, setUserAnswer] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-    const correctAnswer = quest.correctAnswer;
-
-    return (
-        <div key={i} className="mb-8">
-            <h1 className="text-xl font-bold mb-4">{quest.question}</h1>
-            <div className="grid grid-cols-1 gap-2">
-                {quest.multipleChoices.map((choice:any, j: number) => (
-                    <button 
-                        key={j}
-                        className={`btn  w-full ${j === correctAnswer && 'btn-accent'} ${(j === correctAnswer) && userAnswer && 'btn-warning'  }`}
-                        disabled={disabled}
-                        onClick={()=>{
-                            setUserAnswer(true)
-                            setDisabled(true)
-                        }}   
-                    >
-                        {choice}
-                    </button>
-                ))}
-            </div>
-        </div>
-    )
+function Question({ quest, selectedAnswer, onAnswerSelect }: Questions) {
+  return (
+    <div className="mb-8">
+      <h1 className="text-xl font-bold mb-4">{quest.question}</h1>
+      <div className="grid grid-cols-1 gap-2">
+        {quest.multipleChoices.map((choice, j) => {
+          const isCorrect = j === quest.correctAnswer;
+          const isSelected = j === selectedAnswer;
+          
+          return (
+            <button
+              key={`choice-${quest._id}-${j}`}
+              className={`btn w-full opacity-90 
+                ${selectedAnswer !== undefined && isCorrect ? 'btn-accent' : ''}
+                ${isSelected && !isCorrect ? 'btn-error' : ''}
+                ${isSelected ? 'btn-active' : ''}
+                ${selectedAnswer !== undefined ? 'cursor-not-allowed' : 'cursor-pointer'}
+              `}
+              onClick={() => {
+                if(!(selectedAnswer !== undefined)) onAnswerSelect(j)
+                }}
+              
+            >
+              {choice}
+              {selectedAnswer !== undefined && isCorrect && (
+                <span className="ml-2">✓</span>
+              )}
+              {isSelected && !isCorrect && (
+                <span className="ml-2">✗</span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
-export default Question
+export default Question;
