@@ -1,4 +1,3 @@
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import React from "react";
 
@@ -21,14 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${inter.className} bg-[#FAFCFB]`}>
-          <div className="w-full h-screen flex justify-center items-center">
-            {children}
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+    <body className={`${inter.className} bg-[#FAFCFB]`}>
+      <div className="w-full h-screen flex justify-center items-center">
+        {children}
+      </div>
+    </body>
   );
 }
