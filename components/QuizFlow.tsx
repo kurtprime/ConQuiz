@@ -1,7 +1,7 @@
 // components/QuizFlow.tsx
-'use client';
-import { useState } from 'react';
-import Question from './Question';
+"use client";
+import { useState } from "react";
+import Question from "./Question";
 
 interface QuizFlowProps {
   quiz: {
@@ -9,34 +9,33 @@ interface QuizFlowProps {
       _id: string;
       question: string;
       multipleChoices: string[];
-      correctAnswer: number;
+      correctAnswer: string;
     }>;
   };
 }
 
 export default function QuizFlow({ quiz }: QuizFlowProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
+  const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
 
   const currentQuestion = quiz.quizzes[currentQuestionIndex];
   const totalQuestions = quiz.quizzes.length;
 
-  const handleAnswerSelect = (selectedIndex: number) => {
-    setUserAnswers(prev => ({
+  const handleAnswerSelect = (selectedQuestion: string) => {
+    setUserAnswers((prev) => ({
       ...prev,
-      [currentQuestion._id]: selectedIndex,
+      [currentQuestion._id]: selectedQuestion,
     }));
-
   };
 
   const handleNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     } else {
       setShowResults(true);
     }
-    console.log(userAnswers[currentQuestion._id])
+    console.log(userAnswers[currentQuestion._id]);
   };
 
   const calculateScore = () => {
@@ -70,10 +69,10 @@ export default function QuizFlow({ quiz }: QuizFlowProps) {
         </span>
         <button
           onClick={handleNext}
-          disabled={!userAnswers[currentQuestion._id] && (userAnswers[currentQuestion._id] !== 0)}
+          disabled={!userAnswers[currentQuestion._id]}
           className="btn btn-primary"
         >
-          {currentQuestionIndex < totalQuestions - 1 ? 'Next' : 'Finish'}
+          {currentQuestionIndex < totalQuestions - 1 ? "Next" : "Finish"}
         </button>
       </div>
     </div>

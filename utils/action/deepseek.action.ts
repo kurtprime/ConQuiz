@@ -10,20 +10,19 @@ export async function deepseek({
   const openai = new OpenAI({
     baseURL: "https://api.deepseek.com",
     apiKey: process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY,
-    dangerouslyAllowBrowser: true
-  }
-);
+    dangerouslyAllowBrowser: true,
+  });
 
   const completion = await openai.chat.completions.create({
     messages: [
       {
-        content: `You will create a  maximun of ${maxQuestion} questionnaire that are ${difficulty} difficulty with multiple choices up to 4 and also give the correct index to the right choices. 
+        content: `You will create a  maximun of ${maxQuestion} questionnaire that are ${difficulty} difficulty with multiple choices up to 4 and also give the exact correct string to the right choices. 
         Example JSON format: 
         {
           quizzes:[{ 
             "question": "...", 
             "multipleChoices": ["..."],
-            "correctAnswer": (correct answer is based on the number of index) 
+            "correctAnswer": (Correct answer)
           }]
         }
         `,

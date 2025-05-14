@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { Geist, Aclonica } from "next/font/google";
+import "../globals.css";
 import {
   ClerkProvider,
   SignedIn,
@@ -9,17 +9,17 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/nextjs";
+import Navbar from "@/components/shared/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const aclonica = Aclonica({
+  weight: ["400"], // Or other weights you need
+  subsets: ["latin"], // Or other subsets
 });
-
 export const metadata: Metadata = {
   title: "Conquiz",
   description: "Convert your file to Quiz",
@@ -34,16 +34,9 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#FAFCFB]`}
+          className={`${geistSans.variable} ${aclonica.className} antialiased bg-[#FAFCFB]`}
         >
-          <nav>
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </nav>
+          <Navbar children={children} />
           {children}
           <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
             <aside>
