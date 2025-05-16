@@ -1,6 +1,6 @@
 // components/QuizFlow.tsx
 "use client";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Question from "./Question";
 import { updateQuizScore } from "@/utils/action/quiz.action";
 import Link from "next/link";

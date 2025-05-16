@@ -1,4 +1,3 @@
-import CreateNote from "@/components/CreateNote";
 import { Button } from "@/components/ui/button";
 import UpdateNote from "@/components/UpdateNote";
 import { getUserNote } from "@/utils/action/user.action";

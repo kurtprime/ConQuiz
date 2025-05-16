@@ -2,9 +2,8 @@
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { useOrganization } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -28,9 +27,6 @@ interface Props {
 
 function CreateNote({ userId, title, content }: Props) {
   const router = useRouter();
-  const pathname = usePathname();
-
-  const { organization } = useOrganization();
 
   const NoteSchema = z.object({
     title: z.string().min(1),

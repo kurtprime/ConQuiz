@@ -2,9 +2,8 @@
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
-import { useOrganization } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   Form,
@@ -18,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useFormStatus } from "react-dom";
-import { addUserNote, updateUserNote } from "@/utils/action/user.action";
+import { updateUserNote } from "@/utils/action/user.action";
 
 interface Props {
   userId: string;
@@ -29,9 +28,6 @@ interface Props {
 
 function UpdateNote({ userId, title, content, noteId }: Props) {
   const router = useRouter();
-  const pathname = usePathname();
-
-  const { organization } = useOrganization();
 
   const NoteSchema = z.object({
     title: z.string().min(1),
