@@ -40,14 +40,14 @@ function Navbar() {
         <div className="flex-1 flex items-center justify-between px-4 max-sm:hidden sm:px-8">
           {" "}
           <div className="flex items-center space-x-6">
-            <Link
+            {/* <Link
               href="/"
               className={`text-sm font-medium transition-colors hover:text-primary ${
                 isActive("/") ? "btn btn-info" : ""
               }`}
             >
               Overview
-            </Link>
+            </Link> */}
             <Link
               href="/quiz"
               className={`text-sm font-medium transition-colors hover:text-primary ${

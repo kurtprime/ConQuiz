@@ -4,6 +4,7 @@ import { QuizDocument } from "../interface/quiz.inter";
 import User from "../models/user.model";
 import { connectToDatabase } from "../mongoose";
 import mongoose, { Types } from "mongoose";
+import Quiz from "../models/quiz.model";
 
 export async function upsertUserQuiz(userId: string, quizId: any) {
   console.log("UPDATING USER", quizId);
@@ -35,7 +36,10 @@ export async function getUserQuizzes(userId: string) {
 
     // Find user and populate their quizzes
     const user = await User.findOne({ userId: userId })
-      .populate("quizCreated")
+      .populate({
+        path: "quizCreated",
+        model: Quiz,
+      })
       .lean()
       .exec();
 
