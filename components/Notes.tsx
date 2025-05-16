@@ -1,80 +1,31 @@
-import React from "react";
+import { getUserNotes } from "@/utils/action/user.action";
+import { currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
-function Notes() {
+async function Notes() {
+  const user = await currentUser();
+  if (!user) redirect("sign-in");
+  const notes = await getUserNotes(user.id);
   return (
     <div className="flex gap-5 justify-center items-center flex-wrap">
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
+      {notes.length > 0 ? (
+        notes.map((note: any) => (
+          <div key={note._id} className="card card-border bg-base-100 w-96">
+            <div className="card-body">
+              <h2 className="card-title text-ellipsis">{note.title}</h2>
+              <p className="text-ellipsis">{note.content}</p>
+              <div className="card-actions justify-end">
+                <Link href={`/note/${note._id}`} className="btn btn-primary">
+                  Edit
+                </Link>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
-      </div>
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
-      </div>
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
-      </div>
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
-      </div>
-      <div className="card card-border bg-base-100 w-96">
-        <div className="card-body">
-          <h2 className="card-title">Card Title</h2>
-          <p>
-            A card component has a figure, a body part, and inside body there
-            are title and actions parts
-          </p>
-          <div className="card-actions justify-end">
-            <button className="btn btn-primary">Buy Now</button>
-          </div>
-        </div>
-      </div>
+        ))
+      ) : (
+        <div>empty note</div>
+      )}
     </div>
   );
 }
