@@ -1,45 +1,165 @@
 "use client";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  UserButton,
-  UserProfile,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
+import Link from "next/link";
+import { useState } from "react"; // Native React hook
 
-function LeftNav({ children }: { children: ReactNode }) {
+function Navbar() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const isActive = (route: string) =>
+    (pathname.includes(route) && route.length > 1) || pathname === route;
 
   return (
-    <nav>
-      <div className="navbar bg-base-100 shadow-sm">
-        <div className="flex-1">
-          <div className="flex flex-row">
-            <Image
-              alt="Conquiz Logo"
-              src="/assets/Logo.png"
-              width={70}
-              height={80}
-              className="object-fill"
-            />
-            <span>ConQuiz</span>
+    <nav className="sticky top-0 z-50 w-full shadow-sm bg-background ">
+      <div className="flex h-16 items-center">
+        {/* Logo section with full-left background */}
+        <div className="h-full bg-[#b7cede] flex items-center pl-4 pr-8 rounded-r-lg">
+          <div className="flex items-center gap-2">
+            <div className="flex h-12 w-12 items-center justify-center">
+              <Image
+                alt="Conquiz Logo"
+                src="/assets/Logo.png"
+                width={40}
+                height={40}
+                className="object-contain p-1"
+              />
+            </div>
+            <Link
+              href="/"
+              className="hidden text-xl font-semibold md:block text-[#2c3e50]"
+            >
+              ConQuiz
+            </Link>
           </div>
         </div>
-        <div className="flex-none">
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
+
+        {/* Rest of the navigation content */}
+        <div className="flex-1 flex items-center justify-between px-4 max-sm:hidden sm:px-8">
+          {" "}
+          <div className="flex items-center space-x-6">
+            <Link
+              href="/"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive("/") ? "btn btn-info" : ""
+              }`}
+            >
+              Overview
+            </Link>
+            <Link
+              href="/quiz"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive("/quiz") ? "btn btn-info" : ""
+              }`}
+            >
+              Quiz
+            </Link>
+            <Link
+              href="/note"
+              className={`text-sm font-medium transition-colors hover:text-primary ${
+                isActive("/note") ? "btn btn-info" : ""
+              }`}
+            >
+              Notes
+            </Link>
+          </div>
+          {/* Auth Section */}
+          <div className="flex items-center space-x-4">
+            <SignedOut>
+              <SignInButton>
+                <button className="rounded-md px-4 py-2 text-sm font-medium hover:bg-accent">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  elements: {
+                    userButtonBox: "flex-row-reverse gap-2",
+                    avatarBox: "h-8 w-8",
+                  },
+                }}
+                showName={true}
+              />
+            </SignedIn>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="flex flex-1 items-center justify-around sm:hidden">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+            aria-label="Open menu"
+          >
+            <svg
+              className="h-6 w-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+
+          {isMobileMenuOpen && (
+            <div className="absolute top-16 left-0 right-0 bg-white border-b">
+              <div className="flex flex-col gap-4 p-4">
+                <Link
+                  href="/"
+                  className={`font-medium ${
+                    isActive("/") ? "text-primary underline" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Overview
+                </Link>
+                <Link
+                  href="/quiz"
+                  className={`font-medium ${
+                    isActive("/quiz") ? "text-primary underline" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Quiz
+                </Link>
+                <Link
+                  href="/note"
+                  className={`font-medium ${
+                    isActive("/note") ? "text-primary underline" : ""
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Notes
+                </Link>
+              </div>
+            </div>
+          )}
+
           <SignedIn>
-            <UserButton showName={true} />
+            <UserButton
+              appearance={{ elements: { userButtonBox: "h-8 w-8" } }}
+            />
           </SignedIn>
+          <SignedOut>
+            <SignInButton>
+              <button className="rounded-md px-3 py-1.5 text-sm font-medium hover:bg-accent">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </nav>
   );
 }
 
-export default LeftNav;
+export default Navbar;

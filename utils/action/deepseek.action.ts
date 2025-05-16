@@ -19,6 +19,7 @@ export async function deepseek({
         content: `You will create a  maximun of ${maxQuestion} questionnaire that are ${difficulty} difficulty with multiple choices up to 4 and also give the exact correct string to the right choices. 
         Example JSON format: 
         {
+          title: (create the title for this quiz),
           quizzes:[{ 
             "question": "...", 
             "multipleChoices": ["..."],

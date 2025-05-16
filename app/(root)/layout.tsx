@@ -36,8 +36,10 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${aclonica.className} antialiased bg-[#FAFCFB]`}
         >
-          <Navbar children={children} />
-          {children}
+          <Navbar />
+          <div className="min-h-[80vh] flex justify-center items-center">
+            {children}
+          </div>
           <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
             <aside>
               <svg
