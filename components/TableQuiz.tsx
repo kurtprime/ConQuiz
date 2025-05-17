@@ -25,7 +25,7 @@ export async function TableQuiz() {
       {quizzes.length === 0 ? (
         <TableCaption>Create your Quiz first</TableCaption>
       ) : (
-        <TableCaption>A list of your recent Quiz</TableCaption>
+        <TableCaption>List of your recent Quiz</TableCaption>
       )}
       <TableHeader>
         <TableRow>

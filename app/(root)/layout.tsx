@@ -3,6 +3,8 @@ import { Geist, Aclonica } from "next/font/google";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/shared/Navbar";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +33,7 @@ export default function RootLayout({
         >
           <Navbar />
           <div className="min-h-[80vh] flex justify-center items-center">
-            {children}
+            <Suspense fallback={<Loading />}>{children}</Suspense>
           </div>
           <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
             <aside>
@@ -54,7 +56,7 @@ export default function RootLayout({
                 <br />
                 Princess Joy Lumbre
                 <br />
-                Lady Henesy Rescober
+                Lady Hennesy Rescober
               </p>
               <p>Copyright © {new Date().getFullYear()} - All right reserved</p>
             </aside>
