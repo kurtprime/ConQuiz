@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-
+import { Analytics } from "@vercel/analytics/next";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -42,6 +42,7 @@ export default function RootLayout({
             <div className="min-h-[80vh] bg-[#FAFCFB] flex justify-center items-center">
               <Suspense fallback={<Loading />}>{children}</Suspense>
               <SpeedInsights />
+              <Analytics />
             </div>
             <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
               <aside>
