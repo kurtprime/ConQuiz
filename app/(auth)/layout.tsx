@@ -5,8 +5,8 @@ import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
 export const metadata = {
-  title: "Conquiz",
-  description: "Convert your file to Quiz",
+  title: "Conquiz Account",
+  description: "Sign in or Sign up to Convert your file to Quiz",
 };
 
 const inter = Inter({

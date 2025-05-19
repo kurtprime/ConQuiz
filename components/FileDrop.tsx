@@ -3,54 +3,63 @@
 import { useFormStatus } from "react-dom";
 import { deepseek } from "@/utils/action/deepseek.action";
 import Form from "next/form";
-import pdfToText from "react-pdftotext";
 import { createQuiz } from "@/utils/action/quiz.action";
 import { useRouter } from "next/navigation";
 import { CloudIcon } from "lucide-react";
 import { useState } from "react";
 import { upsertUserQuiz } from "@/utils/action/user.action";
+import { FileTextExtractor } from "@/lib/fileParser";
 
 export default function FileDrop({ userId }: { userId: string }) {
   const router = useRouter();
-  const [PdfText, setPdfText] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [maxQuestions, setMaxQuestions] = useState("");
-
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
   async function onSubmit(formData: FormData) {
-    const difficulty = formData.get("difficulty") as string;
-    const maxQuest = formData?.get("numberOfQuestions") as string;
-    console.log(userId);
+    try {
+      setIsSubmitting(true);
+      setError("");
 
-    const res: any = await deepseek({
-      content: PdfText,
-      difficulty: difficulty,
-      maxQuestion: +maxQuest,
-    });
-    const quiz = JSON.parse(res);
-    console.log("QUIZ", quiz);
-    const { id, _id } = await createQuiz(quiz, userId);
-    await upsertUserQuiz(userId, _id);
-    router.push(`/quiz/${id}`);
-  }
-  function extractText(event: any) {
-    const file = event.target.files[0];
-    pdfToText(file)
-      .then((text) => {
-        setPdfText(text);
-        console.log(text);
-      })
-      .catch((error) =>
-        console.error("Failed to extract text from pdf ", error)
+      // Step 1: Extract file text (20% progress)
+      setCurrentStep("Reading file...");
+      const fileDrop = formData.get("FileDrop") as File;
+      const text = await FileTextExtractor(fileDrop);
+      setProgress(20);
+
+      // Step 2: Generate quiz with AI (40% progress)
+      setCurrentStep("Generating questions...");
+      const res = await deepseek({
+        content: text,
+        difficulty: formData.get("difficulty") as string,
+        maxQuestion: +(formData.get("numberOfQuestions") as string),
+      });
+      setProgress(60);
+      if (!res) throw new Error("CANNOT MAKE QUIZ");
+      // Step 3: Create quiz in DB (20% progress)
+      setCurrentStep("Saving quiz...");
+      const quiz = JSON.parse(res);
+      const { id, _id } = await createQuiz(quiz, userId);
+      await upsertUserQuiz(userId, _id);
+      setProgress(80);
+
+      // Step 4: Final redirect (100% progress)
+      setCurrentStep("Redirecting...");
+      router.push(`/quiz/${id}`);
+      setProgress(100);
+    } catch (error: any) {
+      setError(
+        error instanceof Error ? error.message : "Failed to create quiz"
       );
-  }
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files[0]) {
-      setFile(files[0]);
-      extractText(event);
+      setProgress(0);
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }
+
   function Submit() {
     const { pending } = useFormStatus();
     if (!pending)
@@ -64,12 +73,22 @@ export default function FileDrop({ userId }: { userId: string }) {
         </button>
       );
     return (
-      <button disabled className="btn">
-        <span className="loading loading-spinner"></span>
-        Creating Quiz
-      </button>
+      <>
+        <div className="btn">
+          <span className="loading loading-spinner"></span>
+          {currentStep} {progress}%
+        </div>
+      </>
     );
   }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files[0]) {
+      setFile(files[0]);
+    }
+  };
+
   return (
     <Form
       action={onSubmit}
@@ -88,9 +107,11 @@ export default function FileDrop({ userId }: { userId: string }) {
         </div>
         <div className="w-full border-2 border-dashed border-blue-200 rounded-lg p-8 text-center bg-blue-50/50 relative">
           <input
+            name="FileDrop"
             type="file"
             required
             onChange={handleFileChange}
+            accept=".pdf,.docx,.doc, .txt"
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
           <div className="flex flex-col items-center">
