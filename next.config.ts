@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb", // Adjust as needed
+    },
+  },
 };
 
 export default nextConfig;

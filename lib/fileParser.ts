@@ -1,4 +1,5 @@
 "use server";
+
 import { getTextExtractor } from "office-text-extractor";
 import * as mammoth from "mammoth";
 
@@ -20,22 +21,5 @@ export async function FileTextExtractor(file: File): Promise<string> {
   } catch (error) {
     console.error("Extraction failed:", error);
     throw new Error("Failed to extract text");
-  }
-}
-
-// Updated onSubmit function
-async function onSubmit(formData: FormData) {
-  const difficulty = formData.get("difficulty") as string;
-  const maxQuest = formData.get("numberOfQuestions") as string;
-
-  // Get the File object
-  const file = formData.get("FileDrop") as File;
-
-  try {
-    const text = await FileTextExtractor(file);
-    console.log("Extracted text:", text);
-    // ... rest of your logic
-  } catch (error) {
-    console.error("File processing failed:", error);
   }
 }

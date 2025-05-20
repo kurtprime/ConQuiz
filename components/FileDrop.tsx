@@ -32,10 +32,15 @@ export default function FileDrop({ userId }: { userId: string }) {
 
       // Step 2: Generate quiz with AI (40% progress)
       setCurrentStep("Generating questions...");
+      const difficulty = formData.get("difficulty");
+      const numQuestions = formData.get("numberOfQuestions")!;
+      console.log("DIFFICULTY ", difficulty);
+      console.log("Question number ", numQuestions);
+
       const res = await deepseek({
         content: text,
-        difficulty: formData.get("difficulty") as string,
-        maxQuestion: +(formData.get("numberOfQuestions") as string),
+        difficulty: difficulty as string,
+        maxQuestion: +numQuestions,
       });
       setProgress(60);
       if (!res) throw new Error("CANNOT MAKE QUIZ");
