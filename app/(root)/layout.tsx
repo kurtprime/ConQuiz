@@ -29,9 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning data-theme="light">
         <body
-          className={`${geistSans.variable} ${aclonica.className} antialiased bg-[#FAFCFB]`}
+          className={`${geistSans.variable} ${aclonica.className} antialiased text-[#48578e] bg-[#FAFCFB]`}
         >
           <ThemeProvider
             attribute="class"

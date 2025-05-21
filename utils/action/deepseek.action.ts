@@ -24,7 +24,7 @@ export async function deepseek({
           title: (create the title for this quiz),
           quizzes:[{ 
             "question": "...", 
-            "multipleChoices": ["..."],
+            "multipleChoices": ["(Always in a random order)"],
             "correctAnswer": (Correct answer)
           }]
         }

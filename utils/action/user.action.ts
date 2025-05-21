@@ -39,8 +39,10 @@ export async function getUserQuizzes(userId: string) {
       .populate({
         path: "quizCreated",
         model: Quiz,
+        options: { sort: { createdAt: -1, score: 1 } },
       })
       .lean()
+
       .exec();
 
     if (!user) {

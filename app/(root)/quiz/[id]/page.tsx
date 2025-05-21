@@ -3,6 +3,15 @@ import QuizFlow from "@/components/QuizFlow";
 import { getQuizById } from "@/utils/action/quiz.action";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: any): Promise<Metadata> {
+  const quiz = await getQuizById(params.id);
+
+  return {
+    title: `${quiz?.title} | ConQuiz`,
+  };
+}
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
