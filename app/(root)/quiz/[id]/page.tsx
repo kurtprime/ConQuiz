@@ -6,7 +6,8 @@ import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: any): Promise<Metadata> {
-  const quiz = await getQuizById(params.id);
+  const { id } = await params;
+  const quiz = await getQuizById(id);
 
   return {
     title: `${quiz?.title} | ConQuiz`,

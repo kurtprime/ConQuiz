@@ -13,6 +13,7 @@ import { FileTextExtractor } from "@/lib/fileParser";
 export default function FileDrop({ userId }: { userId: string }) {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [extractedFileText, setExtractedFileText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [maxQuestions, setMaxQuestions] = useState("");
   const [progress, setProgress] = useState(0);
@@ -25,10 +26,10 @@ export default function FileDrop({ userId }: { userId: string }) {
       setError("");
 
       // Step 1: Extract file text (20% progress)
-      setCurrentStep("Reading file...");
-      const fileDrop = formData.get("FileDrop") as File;
-      const text = await FileTextExtractor(fileDrop);
-      setProgress(20);
+      // setCurrentStep("Reading file...");
+      // const fileDrop = formData.get("FileDrop") as File;
+      // const text = await FileTextExtractor(fileDrop);
+      // setProgress(20);
 
       // Step 2: Generate quiz with AI (40% progress)
       setCurrentStep("Generating questions...");
@@ -36,12 +37,14 @@ export default function FileDrop({ userId }: { userId: string }) {
       const numQuestions = formData.get("numberOfQuestions")!;
       console.log("DIFFICULTY ", difficulty);
       console.log("Question number ", numQuestions);
+      console.log("IS THERE A TEXT? ", extractedFileText);
 
       const res = await deepseek({
-        content: text,
+        content: extractedFileText,
         difficulty: difficulty as string,
         maxQuestion: +numQuestions,
       });
+
       setProgress(60);
       if (!res) throw new Error("CANNOT MAKE QUIZ");
       // Step 3: Create quiz in DB (20% progress)
@@ -56,10 +59,12 @@ export default function FileDrop({ userId }: { userId: string }) {
       router.push(`/quiz/${id}`);
       setProgress(100);
     } catch (error: any) {
+      console.error("ERROR GENEARTING QUIZ ", error);
       setError(
         error instanceof Error ? error.message : "Failed to create quiz"
       );
       setProgress(0);
+      throw new Error("ERROR GENEARTING QUIZ ", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -87,11 +92,18 @@ export default function FileDrop({ userId }: { userId: string }) {
     );
   }
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
-    if (files && files[0]) {
-      setFile(files[0]);
-    }
+    if (!files) return;
+    setFile(files[0]);
+
+    const arrayBuffer = await files[0].arrayBuffer();
+
+    const extractedText = await FileTextExtractor(arrayBuffer);
+    console.log("CLIENT FILES ", extractedText.trim());
+    setExtractedFileText(extractedText);
   };
 
   return (
@@ -143,13 +155,6 @@ export default function FileDrop({ userId }: { userId: string }) {
           </div>
         </div>
         <div className="card-body items-center text-center">
-          {/* <h2 className="card-title">File Drop</h2> */}
-          {/* <input
-            type="file"
-            onChange={extractText}
-            required
-            className="file-input file-input-ghost"
-          /> */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <label className="block text-blue-600 mb-2">Difficulty:</label>

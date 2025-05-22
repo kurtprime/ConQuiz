@@ -14,44 +14,69 @@ export async function deepseek({
     apiKey: process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY,
     dangerouslyAllowBrowser: true,
   });
+  try {
+    const completion = await openai.chat.completions.create({
+      messages: [
+        {
+          content: `You are a quiz generation system. Create exactly ${maxQuestion} ${difficulty}-difficulty questions following these rules:
+          1. Difficulty Criteria:
+            - Easy: Fact-based questions with direct answers
+            - Medium: Requires conceptual understanding
+            - Hard: Demands critical analysis/application
 
-  const completion = await openai.chat.completions.create({
-    messages: [
-      {
-        content: `You will create a  maximun of ${maxQuestion} questionnaire that are ${difficulty} difficulty with multiple choices up to 4 and also give the exact correct string to the right choices. 
+          2. Question Requirements:
+            - 4 randomized multiple-choice options
+            - Only 1 correct answer (exact string match)
+            - Avoid duplicate answer patterns
+            - Questions must vary in focus/approach
+
         Example JSON format: 
         {
-          title: (create the title for this quiz),
-          quizzes:[{ 
-            "question": "...", 
-            "multipleChoices": ["(Always in a random order)"],
-            "correctAnswer": (Correct answer)
-          }]
+          "difficulty": "${difficulty}",
+          "title": "Title for the quizzes",
+          "quizzes": [
+            {
+              "question": "Clear, unambiguous question",
+              "multipleChoices": [
+                "Randomized Option 1",
+                "Correct Answer", 
+                "Randomized Option 3",
+                "Randomized Option 4"
+              ],
+              "correctAnswer": "Correct Answer"
+            }
+          ]
         }
         `,
-        role: "system",
-      },
-      {
-        content: content,
-        role: "user",
-      },
-    ],
-    model: "deepseek-chat",
-    frequency_penalty: 0,
-    max_tokens: 8000,
-    presence_penalty: 0,
-    response_format: {
-      type: "json_object",
-    },
-    stop: null,
-    stream: false,
-    stream_options: null,
-    temperature: 1,
-    top_p: 1,
-    tool_choice: "none",
-    logprobs: false,
-    top_logprobs: null,
-  });
+          role: "system",
+        },
+        {
+          content: content,
+          role: "user",
+        },
+      ],
 
-  return completion.choices[0].message.content;
+      model: "deepseek-chat",
+      frequency_penalty: 0,
+      max_tokens: 8000,
+      presence_penalty: 0.1,
+      response_format: {
+        type: "json_object",
+      },
+      temperature: 0.7,
+      top_p: 0.9,
+      tool_choice: "none",
+      logprobs: false,
+      top_logprobs: null,
+    });
+    const contentRes: any = completion.choices[0].message.content;
+    if (!content) throw new Error("Content is Empty");
+    console.log("DEEPSEEK OKAY ", contentRes);
+
+    console.log("DEEPSEEK OKAY ", JSON.parse(contentRes));
+    return contentRes;
+  } catch (error: any) {
+    console.error("ERROR GENERATING QUIZ IN SERVER ", error);
+    throw new Error("ERROR QUIZ for SERVER ", error);
+  }
 }
