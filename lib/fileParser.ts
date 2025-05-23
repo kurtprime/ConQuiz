@@ -2,14 +2,22 @@
 
 import { getTextExtractor } from "office-text-extractor";
 
-export async function FileTextExtractor(file: any): Promise<string> {
+export async function FileTextExtractor(buffer: any): Promise<string> {
   try {
     const extractor = getTextExtractor();
-    const text = await extractor.extractText({
-      input: Buffer.from(file), // Pass the Uint8Array instead of File
-      type: "buffer", // Specify the correct input type
-    });
-    console.log("FILE PASRSE OKAY");
+    const chunkSize = 1024 * 1024; // 1MB chunks
+    let text = "";
+
+    for (let i = 0; i < buffer.byteLength; i += chunkSize) {
+      const chunk = buffer.slice(i, i + chunkSize);
+      const chunkText = await extractor.extractText({
+        input: chunk,
+        type: "buffer",
+      });
+      text += chunkText;
+    }
+
+    console.log("FILE PASRSE OKAY ", text);
 
     return text;
   } catch (error) {

@@ -12,7 +12,7 @@ import { FileTextExtractor } from "@/lib/fileParser";
 
 export default function FileDrop({ userId }: { userId: string }) {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [error, setError]: any = useState("");
   const [extractedFileText, setExtractedFileText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [maxQuestions, setMaxQuestions] = useState("");
@@ -97,8 +97,17 @@ export default function FileDrop({ userId }: { userId: string }) {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     try {
+      setError("");
       const files = event.target.files;
+      const MAX_SIZE_MB = 8;
+
       if (!files) return;
+
+      if (files[0].size > MAX_SIZE_MB * 1024 * 1024) {
+        alert(`File size exceeds ${MAX_SIZE_MB}MB limit`);
+        return;
+      }
+
       setIsLoading(true);
       setFile(files[0]);
 
@@ -108,6 +117,7 @@ export default function FileDrop({ userId }: { userId: string }) {
       console.log("CLIENT FILES ", extractedText.trim());
       setExtractedFileText(extractedText);
     } catch (error: any) {
+      setError(error);
       console.error("File processing error:", error);
     } finally {
       setIsLoading(false);
@@ -190,6 +200,14 @@ export default function FileDrop({ userId }: { userId: string }) {
                 : "No file chosen yet"}
             </p>
           </div>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+              <strong>Error:</strong> {error.message}
+              {error.message.includes("large") && (
+                <p className="mt-2 text-sm">Try files under 8MB</p>
+              )}
+            </div>
+          )}
         </div>
         <div className="card-body items-center text-center">
           <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
