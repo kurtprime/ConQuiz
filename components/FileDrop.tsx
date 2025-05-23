@@ -16,8 +16,8 @@ export default function FileDrop({ userId }: { userId: string }) {
   const [extractedFileText, setExtractedFileText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [maxQuestions, setMaxQuestions] = useState("");
-  const [progress, setProgress] = useState(0);
-  const [currentStep, setCurrentStep] = useState("");
+  const [progress, setProgress] = useState(20);
+  const [currentStep, setCurrentStep] = useState("...");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,13 +27,7 @@ export default function FileDrop({ userId }: { userId: string }) {
       setIsSubmitting(true);
       setError("");
 
-      // Step 1: Extract file text (20% progress)
-      // setCurrentStep("Reading file...");
-      // const fileDrop = formData.get("FileDrop") as File;
-      // const text = await FileTextExtractor(fileDrop);
-      // setProgress(20);
-
-      // Step 2: Generate quiz with AI (40% progress)
+      setProgress(20);
       setCurrentStep("Generating questions...");
       const difficulty = formData.get("difficulty");
       const numQuestions = formData.get("numberOfQuestions")!;

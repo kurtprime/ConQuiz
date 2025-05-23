@@ -40,7 +40,7 @@ function Navbar() {
               />
             </div>
             <Link
-              href="/"
+              href="/home"
               className="hidden text-xl font-semibold md:block text-[#2c3e50]"
             >
               ConQuiz
