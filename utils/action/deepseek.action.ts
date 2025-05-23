@@ -22,7 +22,7 @@ export async function deepseek({
           1. Difficulty Criteria:
             - Easy: Fact-based questions with direct answers
             - Medium: Requires conceptual understanding
-            - Hard: Demands critical analysis/application
+            - Hard: Demands critical analysis/application, situational question
 
           2. Question Requirements:
             - 4 randomized multiple-choice options

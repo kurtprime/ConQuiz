@@ -20,6 +20,8 @@ export default function FileDrop({ userId }: { userId: string }) {
   const [currentStep, setCurrentStep] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   async function onSubmit(formData: FormData) {
     try {
       setIsSubmitting(true);
@@ -76,8 +78,13 @@ export default function FileDrop({ userId }: { userId: string }) {
       return (
         <button
           type="submit"
-          disabled={pending}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors text-lg font-medium"
+          disabled={pending || isLoading}
+          className={`w-full bg-blue-500 py-3 rounded-lg transition-colors text-lg font-medium
+    ${
+      pending || isLoading
+        ? "text-blue-200 cursor-not-allowed"
+        : "text-white hover:bg-blue-600"
+    }`}
         >
           Convert to Quiz ≫
         </button>
@@ -95,15 +102,22 @@ export default function FileDrop({ userId }: { userId: string }) {
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const files = event.target.files;
-    if (!files) return;
-    setFile(files[0]);
+    try {
+      const files = event.target.files;
+      if (!files) return;
+      setIsLoading(true);
+      setFile(files[0]);
 
-    const arrayBuffer = await files[0].arrayBuffer();
+      const arrayBuffer = await files[0].arrayBuffer();
 
-    const extractedText = await FileTextExtractor(arrayBuffer);
-    console.log("CLIENT FILES ", extractedText.trim());
-    setExtractedFileText(extractedText);
+      const extractedText = await FileTextExtractor(arrayBuffer);
+      console.log("CLIENT FILES ", extractedText.trim());
+      setExtractedFileText(extractedText);
+    } catch (error: any) {
+      console.error("File processing error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -111,7 +125,7 @@ export default function FileDrop({ userId }: { userId: string }) {
       action={onSubmit}
       className="w-full min-h-[80vh] flex items-center justify-center "
     >
-      <div className="card bg-base-100 w-150 shadow-sm">
+      <div className="card bg-base-100 w-[96vw] sm:w-150 shadow-sm">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-4 left-4 text-blue-200 text-2xl">★</div>
           <div className="absolute top-8 right-12 text-blue-200 text-lg">✦</div>
@@ -130,10 +144,33 @@ export default function FileDrop({ userId }: { userId: string }) {
             onChange={handleFileChange}
             accept=".pdf,.docx,.doc, .txt"
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            disabled={isLoading}
           />
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 mb-4">
-              {file ? (
+              {isLoading ? (
+                <div className="flex items-center justify-center h-24">
+                  <svg
+                    className="animate-spin h-12 w-12 text-blue-500"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                </div>
+              ) : file ? (
                 <div className="text-blue-500 flex items-center justify-center h-full">
                   <CloudIcon className="w-16 h-16" />
                 </div>
@@ -148,14 +185,20 @@ export default function FileDrop({ userId }: { userId: string }) {
                 </div>
               )}
             </div>
-            <p className="text-blue-600 mb-2">Drop File</p>
+            <p className="text-blue-600 mb-2">
+              {isLoading ? "Processing..." : "Drop File"}
+            </p>
             <p className="text-gray-400 text-sm">
-              {file ? file.name : "No file chosen yet"}
+              {isLoading
+                ? "Parsing File..."
+                : file
+                ? file.name
+                : "No file chosen yet"}
             </p>
           </div>
         </div>
         <div className="card-body items-center text-center">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
             <div>
               <label className="block text-blue-600 mb-2">Difficulty:</label>
               <select
