@@ -1,3 +1,5 @@
+"use server";
+
 import { getTextExtractor } from "office-text-extractor";
 
 export async function FileTextExtractor(buffer: any): Promise<string> {
