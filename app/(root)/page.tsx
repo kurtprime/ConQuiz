@@ -19,7 +19,7 @@ export default function page() {
             />
             <div className="flex flex-col  gap-10">
               <h1 className="text-5xl font-bold max-sm:text-2xl">
-                CONVERT PDF TO QUIZ
+                CONVERT PDF TO QUIZ WITHOUT DOING THE HASTLE
               </h1>
               <ul className="list-none space-y-4 max-w-md max-sm:mx-auto text-[#293a47]">
                 <li className="py-4 ">

@@ -8,6 +8,8 @@ import Loading from "./loading";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import { Toaster } from "@/components/ui/sonner";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -43,6 +45,7 @@ export default function RootLayout({
               <Suspense fallback={<Loading />}>{children}</Suspense>
               <SpeedInsights />
               <Analytics />
+              <Toaster />
             </div>
             <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
               <aside>

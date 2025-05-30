@@ -49,7 +49,6 @@ export async function getUserQuizzes(userId: string) {
       console.log("User not found");
       return null;
     }
-    console.log(user);
     return user;
   } catch (error: any) {
     console.error("error on getting the Quizzes", error);

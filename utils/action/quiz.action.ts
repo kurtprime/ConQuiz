@@ -1,5 +1,6 @@
 "use server";
 
+import mongoose from "mongoose";
 import { QuizInter } from "../interface/quiz.inter";
 import Quiz from "../models/quiz.model";
 import { connectToDatabase } from "../mongoose";
@@ -28,7 +29,23 @@ export async function createQuiz(quizzes: QuizInter, userId: string) {
     throw new Error("Error: ", error.message);
   }
 }
+export async function deleteQuiz(quizId: string) {
+  try {
+    // Delete quiz by ID
+    const result = await Quiz.deleteOne({
+      _id: new mongoose.Types.ObjectId(quizId),
+    });
 
+    if (result.deletedCount === 0) {
+      throw new Error("Quiz not found");
+    }
+
+    return { success: true, message: "Quiz deleted successfully" };
+  } catch (error) {
+    console.error("Error deleting quiz:", error);
+    throw new Error("Failed to delete quiz");
+  }
+}
 export async function getQuizById(quizId: string) {
   try {
     connectToDatabase();

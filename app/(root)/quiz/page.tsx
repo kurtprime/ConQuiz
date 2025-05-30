@@ -7,7 +7,7 @@ import { FilePlus } from "lucide-react";
 import Link from "next/link";
 async function page() {
   return (
-    <div className="min-h-[80vh] w-full flex flex-col mt-10 items-start gap-10 justify-start px-20">
+    <div className="min-h-[80vh] w-full flex flex-col mt-10 items-start gap-10 justify-start sm:px-20">
       <Link href="quiz/create">
         <Button className="justify-self-start cursor-pointer  bg-[#355c7d]">
           <FilePlus color="white" strokeWidth={1.75} />{" "}
