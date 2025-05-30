@@ -161,8 +161,7 @@ export default function SignInPage() {
                         Challenge Friends
                       </h3>
                       <p className="text-gray-600">
-                        Compete with others on leaderboards and share your quiz
-                        results.
+                        Compete with others and share your quiz challenge.
                       </p>
                     </div>
                   </div>

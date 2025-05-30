@@ -21,13 +21,7 @@ export default function page() {
         "See your learning journey visualized. CONQUIZ provides detailed analytics to help you identify strengths, track improvements, and focus on areas that need more attention.",
       bgColor: "bg-green-50",
     },
-    {
-      icon: <Trophy className="w-10 h-10 text-amber-600" />,
-      title: "Achieve Mastery",
-      description:
-        "Earn badges and climb leaderboards as you master topics. CONQUIZ turns learning into a rewarding experience with milestones that celebrate your educational achievements.",
-      bgColor: "bg-amber-50",
-    },
+
     {
       icon: <Users className="w-10 h-10 text-purple-600" />,
       title: "Connect & Compete",
@@ -208,7 +202,7 @@ export default function page() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
                 <div
                   key={index}
