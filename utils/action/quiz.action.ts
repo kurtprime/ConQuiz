@@ -33,7 +33,7 @@ export async function deleteQuiz(quizId: string) {
   try {
     // Delete quiz by ID
     const result = await Quiz.deleteOne({
-      _id: new mongoose.Types.ObjectId(quizId),
+      id: quizId,
     });
 
     if (result.deletedCount === 0) {

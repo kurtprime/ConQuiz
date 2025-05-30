@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { deleteQuiz } from "@/utils/action/quiz.action";
 
@@ -29,7 +29,7 @@ export default function QuizInfoUI({ quiz }: { quiz: QuizDocument }) {
   const quizLink = `https://con-quiz.vercel.app/quiz/${quiz.id}`;
   const route = useRouter();
   const [hideDiv, setHideDiv] = useState(false);
-
+  const deleteTimeout = useRef<NodeJS.Timeout | null>(null);
   const handleCopy = async () => {
     toast("Copied", {
       description: "Quiz link copied to clipboard",
@@ -53,14 +53,34 @@ export default function QuizInfoUI({ quiz }: { quiz: QuizDocument }) {
 
   const handleDelete = async () => {
     setHideDiv(true);
-    toast("Quiz has been created", {
-      description: "Quiz has been removed",
+    toast("Quiz will be deleted", {
+      description: "Undo within 5 seconds to cancel deletion",
       action: {
         label: "Undo",
-        onClick: () => setHideDiv(false),
+        onClick: () => {
+          setHideDiv(false);
+          if (deleteTimeout.current) {
+            clearTimeout(deleteTimeout.current);
+            deleteTimeout.current = null;
+          }
+        },
       },
+      duration: 5000,
     });
-    //deleteQuiz()
+    deleteTimeout.current = setTimeout(async () => {
+      try {
+        await deleteQuiz(quiz.id);
+        toast.success("Quiz deleted permanently");
+        // Optional: Refresh data or remove from state
+      } catch (error: any) {
+        toast.error("Deletion failed", {
+          description: error.message,
+        });
+        setHideDiv(false); // Show again since deletion failed
+      } finally {
+        deleteTimeout.current = null;
+      }
+    }, 5000);
   };
 
   return (
