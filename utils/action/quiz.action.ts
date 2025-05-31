@@ -47,11 +47,34 @@ export async function deleteQuiz(quizId: string) {
   }
 }
 export async function getQuizById(quizId: string) {
+  function shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  }
+
   try {
     connectToDatabase();
-    const quiz = await Quiz.findOne({ id: quizId });
-    //console.log("QUIZ REQUEST " ,quiz)
-    return quiz;
+    const quizDoc = await Quiz.findOne({ id: quizId });
+    if (!quizDoc) return null;
+
+    const quiz = quizDoc.toObject();
+    const shuffledQuestions = shuffleArray(quiz.quizzes);
+
+    const randomizedQuiz = {
+      ...quiz,
+      quizzes: shuffledQuestions.map((question: any) => ({
+        ...question,
+        multipleChoices: shuffleArray(question.multipleChoices),
+      })),
+    };
+
+    console.log("QUIZ RANDOM, ", randomizedQuiz.quizzes);
+
+    return randomizedQuiz;
   } catch (error: any) {
     console.error("Error bro", error);
   }

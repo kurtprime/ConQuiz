@@ -13,6 +13,7 @@ const QuizPage = async ({ params }: { params: { id: string } }) => {
 
   // Sanitize data to remove circular references
   const sanitizedQuiz = JSON.parse(JSON.stringify(quiz));
+  //console.log(quiz);
 
   return (
     <div className="flex flex-col items-center mx-[15%] justify-items-center min-h-[80vh]">
