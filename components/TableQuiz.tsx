@@ -9,6 +9,7 @@ export async function TableQuiz() {
 
   if (!user) redirect("sign-in");
   const res: any = await getUserQuizzes(user.id);
+  if (!res) return <div className="m-auto">Create a Quiz first</div>;
   const modifyQuiz = res.quizCreated;
   console.log("LIst of MODIFY QUIZ ", modifyQuiz[0]);
 
@@ -23,7 +24,7 @@ export async function TableQuiz() {
     updatedAt: quiz.updatedAt,
   }));
   console.log("LIst of QUIZ ", quizzes[0]);
-  if (!quizzes) return <div>Create a Quiz first</div>;
+
   return (
     <div className="space-y-4 mx-auto">
       {quizzes.length === 0 ? (
