@@ -93,7 +93,7 @@ export default function QuizFlow({ quiz, userId }: QuizFlowProps) {
         <button
           onClick={handleNext}
           disabled={!userAnswers[currentQuestion._id]}
-          className="btn btn-primary"
+          className="btn btn-primary h-fit"
         >
           {currentQuestionIndex < totalQuestions - 1 ? "Next" : "Finish"}
         </button>

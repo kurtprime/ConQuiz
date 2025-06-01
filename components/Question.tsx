@@ -24,7 +24,7 @@ function Question({ quest, selectedAnswer, onAnswerSelect }: Questions) {
           return (
             <button
               key={`choice-${quest._id}-${j}`}
-              className={`btn w-full opacity-90 
+              className={`btn w-full opacity-90 h-fit py-3
                 ${selectedAnswer !== undefined && isCorrect ? "btn-accent" : ""}
                 ${isSelected && !isCorrect ? "btn-error" : ""}
                 ${isSelected ? "btn-active" : ""}
