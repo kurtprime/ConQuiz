@@ -69,22 +69,30 @@ export default function FileDrop({ userId }: { userId: string }) {
       setIsSubmitting(false);
     }
   }
-
   function Submit() {
     const { pending } = useFormStatus();
+    if (!pending)
+      return (
+        <button
+          type="submit"
+          disabled={pending || isLoading}
+          className={`w-full bg-blue-500 py-3 rounded-lg transition-colors text-lg font-medium
+    ${
+      pending || isLoading
+        ? "text-blue-200 cursor-not-allowed"
+        : "text-white hover:bg-blue-600"
+    }`}
+        >
+          Convert to Quiz ≫
+        </button>
+      );
     return (
-      <button
-        type="submit"
-        disabled={pending || isLoading}
-        className={`w-full bg-blue-500 py-3 rounded-lg transition-colors text-lg font-medium
-          ${
-            pending || isLoading
-              ? "text-blue-200 cursor-not-allowed"
-              : "text-white hover:bg-blue-600"
-          }`}
-      >
-        Convert to Quiz ≫
-      </button>
+      <>
+        <div className="btn">
+          <span className="loading loading-spinner"></span>
+          {currentStep} {progress}%
+        </div>
+      </>
     );
   }
 
@@ -128,28 +136,28 @@ export default function FileDrop({ userId }: { userId: string }) {
   return (
     <Form
       action={onSubmit}
-      className="w-full min-h-[80vh] flex items-center justify-center"
+      className="w-full min-h-[80vh] flex flex-col items-center justify-center"
     >
+      <div className="flex justify-center mb-4">
+        <button
+          type="button"
+          onClick={toggleInputMode}
+          className="flex items-center gap-2 text-blue-600 cursor-pointer hover:text-blue-800 transition-colors"
+        >
+          {inputMode === "file" ? (
+            <>
+              <FileText className="w-5 h-5" />
+              Switch to Text Input
+            </>
+          ) : (
+            <>
+              <FileInput className="w-5 h-5" />
+              Switch to File Upload
+            </>
+          )}
+        </button>
+      </div>
       <div className="card bg-base-100 w-[96vw] sm:w-[600px] shadow-sm p-6">
-        <div className="flex justify-center mb-4">
-          <button
-            type="button"
-            onClick={toggleInputMode}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            {inputMode === "file" ? (
-              <>
-                <FileText className="w-5 h-5" />
-                Switch to Text Input
-              </>
-            ) : (
-              <>
-                <FileInput className="w-5 h-5" />
-                Switch to File Upload
-              </>
-            )}
-          </button>
-        </div>
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           {/* ... decorative elements ... */}
           <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
