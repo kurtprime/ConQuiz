@@ -3,6 +3,8 @@ import React from "react";
 
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
   title: "Conquiz Account",
@@ -27,6 +29,8 @@ export default function RootLayout({
           <div className="w-full min-h-screen flex justify-center items-center">
             {children}
           </div>
+          <SpeedInsights />
+          <Analytics />
           <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
             <aside>
               <svg

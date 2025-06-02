@@ -5,7 +5,7 @@ import { deepseek } from "@/utils/action/deepseek.action";
 import Form from "next/form";
 import { createQuiz } from "@/utils/action/quiz.action";
 import { useRouter } from "next/navigation";
-import { CloudIcon } from "lucide-react";
+import { CloudIcon, FileText, FileInput } from "lucide-react"; // Added new icons
 import { useState } from "react";
 import { upsertUserQuiz } from "@/utils/action/user.action";
 import { FileTextExtractor } from "@/lib/fileParser";
@@ -13,7 +13,7 @@ import { FileTextExtractor } from "@/lib/fileParser";
 export default function FileDrop({ userId }: { userId: string }) {
   const router = useRouter();
   const [error, setError]: any = useState("");
-  const [extractedFileText, setExtractedFileText] = useState("");
+  const [extractedText, setExtractedText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
   const [maxQuestions, setMaxQuestions] = useState("");
   const [progress, setProgress] = useState(20);
@@ -21,6 +21,7 @@ export default function FileDrop({ userId }: { userId: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [inputMode, setInputMode] = useState<"file" | "text">("file"); // New state for input mode
 
   async function onSubmit(formData: FormData) {
     try {
@@ -31,12 +32,15 @@ export default function FileDrop({ userId }: { userId: string }) {
       setCurrentStep("Generating questions...");
       const difficulty = formData.get("difficulty");
       const numQuestions = formData.get("numberOfQuestions")!;
-      console.log("DIFFICULTY ", difficulty);
-      console.log("Question number ", numQuestions);
-      console.log("IS THERE A TEXT? ", extractedFileText);
+
+      // Use either extracted text or manually entered text
+      const contentToUse =
+        inputMode === "file"
+          ? extractedText
+          : (formData.get("textContent") as string);
 
       const res = await deepseek({
-        content: extractedFileText,
+        content: contentToUse,
         difficulty: difficulty as string,
         maxQuestion: +numQuestions,
       });
@@ -68,28 +72,19 @@ export default function FileDrop({ userId }: { userId: string }) {
 
   function Submit() {
     const { pending } = useFormStatus();
-    if (!pending)
-      return (
-        <button
-          type="submit"
-          disabled={pending || isLoading}
-          className={`w-full bg-blue-500 py-3 rounded-lg transition-colors text-lg font-medium
-    ${
-      pending || isLoading
-        ? "text-blue-200 cursor-not-allowed"
-        : "text-white hover:bg-blue-600"
-    }`}
-        >
-          Convert to Quiz ≫
-        </button>
-      );
     return (
-      <>
-        <div className="btn">
-          <span className="loading loading-spinner"></span>
-          {currentStep} {progress}%
-        </div>
-      </>
+      <button
+        type="submit"
+        disabled={pending || isLoading}
+        className={`w-full bg-blue-500 py-3 rounded-lg transition-colors text-lg font-medium
+          ${
+            pending || isLoading
+              ? "text-blue-200 cursor-not-allowed"
+              : "text-white hover:bg-blue-600"
+          }`}
+      >
+        Convert to Quiz ≫
+      </button>
     );
   }
 
@@ -114,8 +109,7 @@ export default function FileDrop({ userId }: { userId: string }) {
       const arrayBuffer = await files[0].arrayBuffer();
 
       const extractedText = await FileTextExtractor(arrayBuffer);
-      console.log("CLIENT FILES ", extractedText.trim());
-      setExtractedFileText(extractedText);
+      setExtractedText(extractedText);
     } catch (error: any) {
       setError(error);
       console.error("File processing error:", error);
@@ -124,93 +118,155 @@ export default function FileDrop({ userId }: { userId: string }) {
     }
   };
 
+  const toggleInputMode = () => {
+    setInputMode((prev) => (prev === "file" ? "text" : "file"));
+    setFile(null);
+    setExtractedText("");
+    setError("");
+  };
+
   return (
     <Form
       action={onSubmit}
-      className="w-full min-h-[80vh] flex items-center justify-center "
+      className="w-full min-h-[80vh] flex items-center justify-center"
     >
-      <div className="card bg-base-100 w-[96vw] sm:w-150 shadow-sm">
+      <div className="card bg-base-100 w-[96vw] sm:w-[600px] shadow-sm p-6">
+        <div className="flex justify-center mb-4">
+          <button
+            type="button"
+            onClick={toggleInputMode}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            {inputMode === "file" ? (
+              <>
+                <FileText className="w-5 h-5" />
+                Switch to Text Input
+              </>
+            ) : (
+              <>
+                <FileInput className="w-5 h-5" />
+                Switch to File Upload
+              </>
+            )}
+          </button>
+        </div>
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute top-4 left-4 text-blue-200 text-2xl">★</div>
-          <div className="absolute top-8 right-12 text-blue-200 text-lg">✦</div>
-          <div className="absolute bottom-12 left-8 text-blue-200 text-xl">
-            ✧
-          </div>
-          <div className="absolute top-20 right-4 text-blue-200 text-2xl">
-            ★
+          {/* ... decorative elements ... */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+            <div className="absolute top-4 left-4 text-blue-200 text-2xl">
+              ★
+            </div>
+            <div className="absolute top-8 right-12 text-blue-200 text-lg">
+              ✦
+            </div>
+            <div className="absolute bottom-12 left-8 text-blue-200 text-xl">
+              ✧
+            </div>
+            <div className="absolute top-20 right-4 text-blue-200 text-2xl">
+              ★
+            </div>
           </div>
         </div>
-        <div className="w-full border-2 border-dashed border-blue-200 rounded-lg p-8 text-center bg-blue-50/50 relative">
-          <input
-            name="FileDrop"
-            type="file"
-            required
-            onChange={handleFileChange}
-            accept=".pdf,.docx,.doc, .txt"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            disabled={isLoading}
-          />
-          <div className="flex flex-col items-center">
-            <div className="w-24 h-24 mb-4">
-              {isLoading ? (
-                <div className="flex items-center justify-center h-24">
-                  <svg
-                    className="animate-spin h-12 w-12 text-blue-500"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                </div>
-              ) : file ? (
-                <div className="text-blue-500 flex items-center justify-center h-full">
-                  <CloudIcon className="w-16 h-16" />
-                </div>
-              ) : (
-                <div className="relative w-full h-full">
-                  <CloudIcon className="w-full h-full text-blue-300" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                      <span className="text-blue-400 text-2xl">☺</span>
+
+        {inputMode === "file" ? (
+          <>
+            <div className="w-full border-2 border-dashed border-blue-200 rounded-lg p-8 text-center bg-blue-50/50 relative">
+              <input
+                name="FileDrop"
+                type="file"
+                required
+                onChange={handleFileChange}
+                accept=".pdf,.docx,.doc, .txt"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isLoading}
+              />
+              <div className="flex flex-col items-center">
+                <div className="w-24 h-24 mb-4">
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-24">
+                      <svg
+                        className="animate-spin h-12 w-12 text-blue-500"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
                     </div>
-                  </div>
+                  ) : file ? (
+                    <div className="text-blue-500 flex items-center justify-center h-full">
+                      <CloudIcon className="w-16 h-16" />
+                    </div>
+                  ) : (
+                    <div className="relative w-full h-full">
+                      <CloudIcon className="w-full h-full text-blue-300" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                          <span className="text-blue-400 text-2xl">☺</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <p className="text-blue-600 mb-2">
+                  {isLoading ? "Processing..." : "Drop File"}
+                </p>
+                <p className="text-gray-400 text-sm">
+                  {isLoading
+                    ? "Parsing File..."
+                    : file
+                    ? file.name
+                    : "No file chosen yet"}
+                </p>
+              </div>
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                  <strong>Error:</strong> {error.message}
+                  {error.message.includes("large") && (
+                    <p className="mt-2 text-sm">Try files under 8MB</p>
+                  )}
                 </div>
               )}
             </div>
-            <p className="text-blue-600 mb-2">
-              {isLoading ? "Processing..." : "Drop File"}
-            </p>
-            <p className="text-gray-400 text-sm">
-              {isLoading
-                ? "Parsing File..."
-                : file
-                ? file.name
-                : "No file chosen yet"}
-            </p>
+          </>
+        ) : (
+          <div className="w-full border-2 border-blue-200 rounded-lg p-6 bg-blue-50/50 mb-6">
+            <h3 className="text-lg font-semibold text-blue-800 mb-3">
+              Enter Your Study Material
+            </h3>
+            <textarea
+              name="textContent"
+              value={extractedText}
+              onChange={(e) => setExtractedText(e.target.value)}
+              placeholder="Paste your textbook content, lecture notes, or study materials here..."
+              className="w-full h-48 p-4 border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              required
+            />
           </div>
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-              <strong>Error:</strong> {error.message}
-              {error.message.includes("large") && (
-                <p className="mt-2 text-sm">Try files under 8MB</p>
-              )}
-            </div>
-          )}
-        </div>
-        <div className="card-body items-center text-center">
-          <div className="grid w-full grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+        )}
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <strong>Error:</strong> {error.message}
+            {error.message.includes("large") && (
+              <p className="mt-2 text-sm">Try files under 8MB</p>
+            )}
+          </div>
+        )}
+
+        <div className="card-body items-center text-center p-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-blue-600 mb-2">Difficulty:</label>
               <select
@@ -227,7 +283,7 @@ export default function FileDrop({ userId }: { userId: string }) {
             </div>
             <div>
               <label className="block text-blue-600 mb-2">
-                Maximum of Questions:
+                Number of Questions:
               </label>
               <input
                 type="number"
@@ -237,14 +293,13 @@ export default function FileDrop({ userId }: { userId: string }) {
                 max={20}
                 required
                 onChange={(e) => setMaxQuestions(e.target.value)}
-                placeholder="Enter number"
+                placeholder="5-20"
                 className="w-full p-2 border border-blue-200 rounded-lg bg-blue-50 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
           </div>
-          <Submit />
 
-          <div className="card-actions"></div>
+          <Submit />
         </div>
       </div>
     </Form>

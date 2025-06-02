@@ -22,12 +22,17 @@ export async function deepseek({
           1. Difficulty Criteria:
             - Easy: Fact-based questions with direct answers
             - Medium: Requires conceptual understanding
-            - Hard: Demands critical analysis/application, situational question
+            - Hard: Demands critical analysis/application, situational question, Similar-sounding choices (e.g., dates, names, or technical terms), Complex multiple-choice options
 
           2. Question Requirements:
             - 4 randomized multiple-choice options
-            - Only 1 correct answer (exact string match)
+            - Multiple choice "All of the above" / "None of the above" traps
+            - Negative phrasing: "Which is NOT...", "All except..."
+            - correct answer (exact string match)
+            - Requires recall of precise details (e.g., dates, formulas, definitions)
+            - Double meanings or unclear phrasing (e.g., "Which statement is generally true?")
             - Avoid duplicate answer patterns
+            - Distractors that are almost correct
             - Questions must vary in focus/approach
 
         Example JSON format: 
