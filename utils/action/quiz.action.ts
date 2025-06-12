@@ -68,7 +68,7 @@ export async function getQuizById(quizId: string) {
       ...quiz,
       quizzes: shuffledQuestions.map((question: any) => ({
         ...question,
-        multipleChoices: shuffleArray(question.multipleChoices),
+       
       })),
     };
 

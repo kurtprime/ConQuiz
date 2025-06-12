@@ -27,13 +27,13 @@ export async function deepseek({
           2. Question Requirements:
             - 4 randomized multiple-choice options
             - Multiple choice "All of the above" / "None of the above" traps
-            - Negative phrasing: "Which is NOT...", "All except..."
             - correct answer (exact string match)
             - Requires recall of precise details (e.g., dates, formulas, definitions)
             - Double meanings or unclear phrasing (e.g., "Which statement is generally true?")
             - Avoid duplicate answer patterns
             - Distractors that are almost correct
             - Questions must vary in focus/approach
+            - Instead of A and B, the multiple choices should include the full string of the 2 correct anser
 
         Example JSON format: 
         {
@@ -61,9 +61,9 @@ export async function deepseek({
         },
       ],
 
-      model: "deepseek-chat",
+      model: "deepseek-reasoner",
       frequency_penalty: 0,
-      max_tokens: 8000,
+      max_tokens: 60000,
       presence_penalty: 0.1,
       response_format: {
         type: "json_object",

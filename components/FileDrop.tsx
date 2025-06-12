@@ -298,7 +298,7 @@ export default function FileDrop({ userId }: { userId: string }) {
                 value={maxQuestions}
                 name="numberOfQuestions"
                 min={1}
-                max={20}
+                max={50}
                 required
                 onChange={(e) => setMaxQuestions(e.target.value)}
                 placeholder="5-20"
