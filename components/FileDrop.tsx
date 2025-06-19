@@ -15,7 +15,7 @@ export default function FileDrop({ userId }: { userId: string }) {
   const [error, setError]: any = useState("");
   const [extractedText, setExtractedText] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
-  const [maxQuestions, setMaxQuestions] = useState("");
+  const [maxQuestions, setMaxQuestions] = useState(5);
   const [progress, setProgress] = useState(20);
   const [currentStep, setCurrentStep] = useState("...");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -274,8 +274,8 @@ export default function FileDrop({ userId }: { userId: string }) {
         )}
 
         <div className="card-body items-center text-center p-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+          <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
+            <div className="sm:w-80 w-40">
               <label className="block text-blue-600 mb-2">Difficulty:</label>
               <select
                 value={difficulty}
@@ -289,7 +289,7 @@ export default function FileDrop({ userId }: { userId: string }) {
                 <option value="hard">Hard</option>
               </select>
             </div>
-            <div>
+            <div className="hidden">
               <label className="block text-blue-600 mb-2">
                 Number of Questions:
               </label>
@@ -299,8 +299,7 @@ export default function FileDrop({ userId }: { userId: string }) {
                 name="numberOfQuestions"
                 min={1}
                 max={5}
-                required
-                onChange={(e) => setMaxQuestions(e.target.value)}
+                onChange={(e) => setMaxQuestions(+e.target.value)}
                 placeholder="5-20"
                 className="w-full p-2 border border-blue-200 rounded-lg bg-blue-50 text-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
               />

@@ -63,7 +63,7 @@ export async function deepseek({
 
       model: "deepseek-chat",
       frequency_penalty: 0,
-      max_tokens: 60000,
+      max_tokens: 8000,
       presence_penalty: 0.1,
       response_format: {
         type: "json_object",
