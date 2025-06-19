@@ -28,9 +28,9 @@ export default function RootLayout({
         <body className={`${inter.className}  bg-[#FAFCFB]`}>
           <div className="w-full min-h-screen flex justify-center items-center">
             {children}
+            <SpeedInsights />
+            <Analytics />
           </div>
-          <SpeedInsights />
-          <Analytics />
           <footer className="footer footer-horizontal footer-center bg-primary text-primary-content p-10">
             <aside>
               <svg
